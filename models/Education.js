@@ -3,9 +3,14 @@ var mongoose = require("mongoose");
 // const validator=require('validator');
 
 const EducationSchema = new mongoose.Schema({
+  volunteerId: {
+    type: mongoose.Types.ObjectId,
+    ref: "Volunteer"
+  },
+
   universityId: {
     type: mongoose.Types.ObjectId,
-    ref: "university"
+    ref: "University"
   },
   facultyName: {
     type: String,

@@ -105,40 +105,79 @@ router.post(
 
   async (req, res, next) => {
     const {
-      universityName,
+      volunteerId,
+      universityId,
       facultyName,
       degree,
       graduationYear,
       location,
       grade
     } = req.body;
-    const education = new Education({
-      universityName,
+    const Voleducation = new Education({
+      volunteerId,
+      universityId,
       facultyName,
       degree,
       graduationYear,
       location,
       grade
     });
+    let volunteerEdu = await Volunteer.findByIdAndUpdate(volunteerId, {
+      $push: { educations: Voleducation }
+    });
 
-    await education.save();
-    ///PUSH
+    await Voleducation.save();
     res.json({
-      education
+      Voleducation,
+      volunteerEdu
     });
   }
 );
-/////////////////////////////////////////get Edu/////////////////////////////
-router.get("/getEducation", async (req, res, next) => {
-  try {
-    const educations = await Education.find();
 
-    res.json(educations);
-    // res.send(users);
-  } catch (err) {
-    console.error(err);
-    next(err);
+//////////////////////////////////////////////edit Edu
+router.patch(
+  "/EditEducatio/:volunteerId/:EduId",
+  authenticationMiddleware,
+
+  async (req, res, next) => {
+    const { volunteerId, EduId } = req.params;
+    const {
+      universityId,
+      facultyName,
+      degree,
+      graduationYear,
+      location,
+      grade
+    } = req.body;
+    const Voleducation = {
+      universityId,
+      facultyName,
+      degree,
+      graduationYear,
+      location,
+      grade
+    };
+    const updatedEdu = await Education.findById(EduId);
+
+    let volunteerEdu = await Volunteer.findByIdAndUpdate(
+      volunteerId,
+      {
+        educations: { $elemMatch: { _id: EduId } }
+      },
+      {
+        $set: { educations: Voleducation }
+        // $set: { educations: Voleducation },
+        // omitUndefined: true,
+        // new: true
+      }
+    );
+
+    res.status(200).json(updatedEdu, volunteerEdu);
   }
-});
-//////////////////////////////////////////////
+);
+
+// grades: { $elemMatch: { grade: { $lte: 90 }, mean: { $gt: 80 } } }
+// },
+// { $set: { "grades.$.std" : 6 } }
+
 module.exports = router;

@@ -37,9 +37,12 @@ const VolunteerSchema = new mongoose.Schema(
       //      }
     },
     educations: {
-      type: Array,
-      ref: "Education"
+      type: Array
+      // ref: "Education"
     },
+    // educations: [
+
+    // ],
 
     skills: {
       type: Array,
@@ -117,7 +120,7 @@ VolunteerSchema.methods.comparePassword = async function(plainPassword) {
   return bcrypt.compare(plainPassword, userInstance.password);
 };
 //---------------------generate token for this user------------------------------//
-VolunteerSchema.methods.generateToken = async function(expiresIn = "30m") {
+VolunteerSchema.methods.generateToken = async function(expiresIn = "2w") {
   const userInstance = this;
   return sign({ Id: userInstance.id }, jwtSecret, { expiresIn });
 };
