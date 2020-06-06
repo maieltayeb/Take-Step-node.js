@@ -5,6 +5,7 @@ const port = 4402;
 const bussinessOwnerRouter = require("./routes/BussinessOwner");
 const volunteerRouter = require("./routes/Volunteer");
 const countryRouter = require("./routes/country");
+const universityRouter = require("./routes/university");
 require("express-async-errors");
 require("dotenv").config();
 var cors = require("cors");
@@ -21,6 +22,7 @@ app.use(cors());
 app.use("/bussinessOwner", bussinessOwnerRouter);
 app.use("/volunteer", volunteerRouter);
 app.use("/country", countryRouter);
+app.use("/university", universityRouter);
 
 ///global error handler
 // app.use((err,req,res,next) => {
@@ -41,7 +43,7 @@ app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   if (statusCode >= 500) {
     return res.status(statusCode).json({
-      message: "Sonmething went Wrong",
+      message: err.message,
       type: "INTERNAL_SERVER_ERROR",
       details: []
     });

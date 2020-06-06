@@ -101,31 +101,28 @@ router.post("/login", async (req, res, next) => {
 /////////////////////////Add Edu/////////////////////
 router.post(
   "/add-education",
-  authentication,
+  authenticationMiddleware,
 
   async (req, res, next) => {
     const {
-      volunteerId,
       universityName,
       facultyName,
       degree,
-
       graduationYear,
       location,
       grade
     } = req.body;
     const education = new Education({
-      volunteerId,
       universityName,
       facultyName,
       degree,
-
       graduationYear,
       location,
       grade
     });
 
     await education.save();
+    ///PUSH
     res.json({
       education
     });
