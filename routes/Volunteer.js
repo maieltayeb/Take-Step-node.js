@@ -136,7 +136,7 @@ router.post(
 
 //////////////////////////////////////////////edit Edu
 router.patch(
-  "/EditEducatio/:volunteerId/:EduId",
+  "/EditEducation/:volunteerId/:EduId",
   authenticationMiddleware,
 
   async (req, res, next) => {
@@ -157,15 +157,14 @@ router.patch(
       location,
       grade
     };
+
     const updatedEdu = await Education.findById(EduId);
 
-    let volunteerEdu = await Volunteer.findByIdAndUpdate(
-      volunteerId,
+    let volunteerEdu = await Volunteer.update(
+      { _id: volunteerId, "educations._id": EduId },
+
       {
-        educations: { $elemMatch: { _id: EduId } }
-      },
-      {
-        $set: { educations: Voleducation }
+        $set: { "educations.facultyName": facultyName }
         // $set: { educations: Voleducation },
         // omitUndefined: true,
         // new: true
