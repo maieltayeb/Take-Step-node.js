@@ -1,29 +1,36 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 // const _ = require('lodash');
 // const validator=require('validator');
 
+const EducationSchema = new mongoose.Schema(
+  {
+    universityName: {
+      type: mongoose.Types.ObjectId,
+      ref: "university"
+    },
+    facultyName: {
+      type: String,
+      lowercase: true
+    },
+    degree: {
+      type: String
+    },
+    img: {
+      type: String
+    },
+    graduationYear: {
+      type: Date
+    },
+    location: {
+      type: String
+    },
+    grade: {
+      type: Number
+    }
+  },
+  {}
+);
 
-const EducationSchema=new mongoose.Schema({
-    universityName:{
-     type: String,
-     lowercase: true,
-      },
-     facultyName: {
-        type: String,
-        lowercase: true,
-      
-      },
-      degree:{
-     type:String
-      },
-      grade:{
-      type:Number
-  }
+const Education = mongoose.model("Education", EducationSchema);
 
-},{});
-
-
-const Education=mongoose.model('Education',EducationSchema);
-
-
-module.exports=Education;
+module.exports = Education;

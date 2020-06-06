@@ -1,4 +1,5 @@
 const Volunteer = require("../models/Volunteer");
+const Education = require("../models/Education");
 const express = require("express");
 const authenticationMiddleware = require("../middlewares/authentication");
 const validationMiddleWare = require("../middlewares/validationMiddleware");
@@ -97,5 +98,50 @@ router.post("/login", async (req, res, next) => {
 
   res.json({ token, user });
 });
+/////////////////////////Add Edu/////////////////////
+router.post(
+  "/add-education",
+  authentication,
 
+  async (req, res, next) => {
+    const {
+      volunteerId,
+      universityName,
+      facultyName,
+      degree,
+
+      graduationYear,
+      location,
+      grade
+    } = req.body;
+    const education = new Education({
+      volunteerId,
+      universityName,
+      facultyName,
+      degree,
+
+      graduationYear,
+      location,
+      grade
+    });
+
+    await education.save();
+    res.json({
+      education
+    });
+  }
+);
+/////////////////////////////////////////get Edu/////////////////////////////
+router.get("/getEducation", async (req, res, next) => {
+  try {
+    const educations = await Education.find();
+
+    res.json(educations);
+    // res.send(users);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+//////////////////////////////////////////////
 module.exports = router;
