@@ -53,7 +53,7 @@ router.patch(
         runValidators: true,
         omitUndefined: true
       }
-    );
+    ).populate("country");
     res.status(200).json(user);
   }
 );
@@ -69,10 +69,10 @@ router.post(
     check("email").isEmail()
   ),
   async (req, res, next) => {
-    const { lastName, firstName, password, country, email } = req.body;
+    const { firstName, lastName, password, country, email } = req.body;
     const user = new Volunteer({
-      lastName,
       firstName,
+      lastName,
       password,
       country,
       email

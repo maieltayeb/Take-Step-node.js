@@ -29,10 +29,7 @@ const BusinessOwnerSchema = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
-      required: true,
-      validate: v => {
-        return validator.isEmail(v);
-      }
+      required: true
     },
     paymentData: {
       cardNum: {

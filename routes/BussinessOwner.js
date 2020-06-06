@@ -61,7 +61,7 @@ router.patch(
         runValidators: true,
         omitUndefined: true
       }
-    );
+    ).populate("country");
     res.status(200).json(user);
   }
 );
