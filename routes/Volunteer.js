@@ -189,8 +189,8 @@ router.patch(
       //   });
       //   db.collection.save(doc);
       // });
-      let volunteerEdu = await Volunteer.update(
-        { volunteerId, educations: { $elemMatch: { _id: EduId } } },
+      let volunteerEdu = await Volunteer.findByIdAndUpdate(
+        { _id: volunteerId, educations: { $elemMatch: { _id: EduId } } },
         { $set: { "educations.$": Voleducation } }
       ); //change first Matched elem
       //await Volunteer.findOneAndUpdate(
@@ -224,16 +224,16 @@ router.post(
     const { volunteerId, SkillName } = req.body;
     const Volskill = new Education({
       volunteerId,
-      SkillName
+      SkillName,
     });
     let volunteerSkill = await Volunteer.findByIdAndUpdate(volunteerId, {
-      $push: { skills: Volskill }
+      $push: { skills: Volskill },
     });
 
     awaitVolskill.save();
     res.json({
       Volskill,
-      volunteerSkill
+      volunteerSkill,
     });
   }
 );
