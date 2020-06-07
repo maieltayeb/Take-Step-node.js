@@ -1,5 +1,6 @@
 const Volunteer = require("../models/Volunteer");
 const Education = require("../models/Education");
+const Skill = require("../models/Skill");
 const express = require("express");
 const authenticationMiddleware = require("../middlewares/authentication");
 const validationMiddleWare = require("../middlewares/validationMiddleware");
@@ -178,5 +179,28 @@ router.patch(
 // grades: { $elemMatch: { grade: { $lte: 90 }, mean: { $gt: 80 } } }
 // },
 // { $set: { "grades.$.std" : 6 } }
+
+//////////////////////////////////////////////Add skill//////////////////////////
+router.post(
+  "/add-skill",
+  authenticationMiddleware,
+
+  async (req, res, next) => {
+    const { volunteerId, SkillName } = req.body;
+    const Volskill = new Education({
+      volunteerId,
+      SkillName
+    });
+    let volunteerSkill = await Volunteer.findByIdAndUpdate(volunteerId, {
+      $push: { skills: Volskill }
+    });
+
+    awaitVolskill.save();
+    res.json({
+      Volskill,
+      volunteerSkill
+    });
+  }
+);
 
 module.exports = router;
