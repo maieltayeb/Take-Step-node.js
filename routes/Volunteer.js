@@ -34,7 +34,7 @@ router.patch(
       country,
       email,
       jobTitle,
-      description
+      description,
     } = req.body;
     const user = await Volunteer.findByIdAndUpdate(
       id,
@@ -46,13 +46,13 @@ router.patch(
           country,
           email,
           jobTitle,
-          description
-        }
+          description,
+        },
       },
       {
         new: true,
         runValidators: true,
-        omitUndefined: true
+        omitUndefined: true,
       }
     ).populate("country");
     res.status(200).json(user);
@@ -64,7 +64,7 @@ router.post(
   validationMiddleWare(
     check("password")
       .isLength({
-        min: 4
+        min: 4,
       })
       .withMessage("must be at least 4 chars long"),
     check("email").isEmail()
@@ -76,7 +76,7 @@ router.post(
       lastName,
       password,
       country,
-      email
+      email,
     });
 
     await user.save();
@@ -111,7 +111,7 @@ router.post(
       degree,
       graduationYear,
       location,
-      grade
+      grade,
     } = req.body;
     const Voleducation = new Education({
       volunteerId,
@@ -120,16 +120,16 @@ router.post(
       degree,
       graduationYear,
       location,
-      grade
+      grade,
     });
     let volunteerEdu = await Volunteer.findByIdAndUpdate(volunteerId, {
-      $push: { educations: Voleducation }
+      $push: { educations: Voleducation },
     });
 
     await Voleducation.save();
     res.json({
       Voleducation,
-      volunteerEdu
+      volunteerEdu,
     });
   }
 );
@@ -140,38 +140,73 @@ router.patch(
   authenticationMiddleware,
 
   async (req, res, next) => {
-    const { volunteerId, EduId } = req.params;
-    const {
-      universityId,
-      facultyName,
-      degree,
-      graduationYear,
-      location,
-      grade
-    } = req.body;
-    const Voleducation = {
-      universityId,
-      facultyName,
-      degree,
-      graduationYear,
-      location,
-      grade
-    };
+    try {
+      const { volunteerId, EduId } = req.params;
+      const {
+        universityId,
+        facultyName,
+        degree,
+        graduationYear,
+        location,
+        grade,
+      } = req.body;
+      const Voleducation = {
+        universityId,
+        facultyName,
+        degree,
+        graduationYear,
+        location,
+        grade,
+      };
 
-    const updatedEdu = await Education.findById(EduId);
+      const updatedEdu = await Education.findByIdAndUpdate(EduId, {
+        volunteerId,
+        universityId,
+        facultyName,
+        degree,
+        graduationYear,
+        location,
+        grade,
+      });
+      // let volunteerEdu = await Volunteer.find({
+      //   _id: volunteerId,
+      //   educations: { _id: EduId },
+      // }).forEach(function (doc) {
+      //   doc.educations.forEach(function (event) {
+      //     if (educations._id === EduId) {
+      //       educations.facultyName = facultyName;
+      //     }
+      //   });
+      //   //  await volunteerEdu.save();
+      // });
+      //  db.collection.find({ _id: ObjectId('4d2d8deff4e6c1d71fc29a07') })
+      // .forEach(function (doc) {
+      //   doc.events.forEach(function (event) {
+      //     if (event.profile === 10) {
+      //       event.handled=0;
+      //     }
+      //   });
+      //   db.collection.save(doc);
+      // });
+      let volunteerEdu = await Volunteer.update(
+        { volunteerId, educations: { $elemMatch: { _id: EduId } } },
+        { $set: { "educations.$": Voleducation } }
+      ); //change first Matched elem
+      //await Volunteer.findOneAndUpdate(
+      //   volunteerId,
+      //   { educations: { _id: EduId } },
 
-    let volunteerEdu = await Volunteer.update(
-      { _id: volunteerId, "educations._id": EduId },
-
-      {
-        $set: { "educations.facultyName": facultyName }
-        // $set: { educations: Voleducation },
-        // omitUndefined: true,
-        // new: true
-      }
-    );
-
-    res.status(200).json(updatedEdu, volunteerEdu);
+      //   {
+      //     $set: { "educations.$.facultyName": facultyName },
+      //     // $set: { educations: Voleducation },
+      //     // omitUndefined: true,
+      //     // new: true
+      //   }
+      // );
+      res.json({ updatedEdu, volunteerEdu });
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 );
 
