@@ -50,16 +50,19 @@ const BusinessOwnerSchema = new mongoose.Schema(
       }
     },
     jobTitle: {
-      type: String
+      type: String,
+    
     },
     imgUrl: {
       type: String
     },
     description: {
-      type: String
+      type: String,
+     
     },
     companyName: {
-      type: String
+      type: String,
+     
     }
   },
   {

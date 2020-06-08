@@ -109,7 +109,7 @@ router.post("/login", async (req, res, next) => {
   if (!isMatch) throw new Error("wrong email or password");
 
   const token = await user.generateToken();
-
+ 
   if (!token) throw new Error("token  cant created");
 
   res.json({ token, user });
