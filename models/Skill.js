@@ -4,10 +4,9 @@ var mongoose = require("mongoose");
 
 const SkillSchema = new mongoose.Schema(
   {
-    SkillName: {
+    skillName: {
       type: String,
-      required: true,
-      unique: true
+      required: true
     }
   },
   {}

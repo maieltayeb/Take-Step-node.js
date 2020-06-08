@@ -36,18 +36,18 @@ const VolunteerSchema = new mongoose.Schema(
 
       //      }
     },
-    educations: {
-      type: Array
-      // ref: "Education"
-    },
-    // educations: [
-
-    // ],
-
-    skills: {
-      type: Array,
-      ref: "Skill"
-    },
+    educations: [
+      {
+        type: mongoose.ObjectId,
+        ref: "Education"
+      }
+    ],
+    skills: [
+      {
+        type: mongoose.ObjectId,
+        ref: "Skill"
+      }
+    ],
     jobTitle: {
       type: String
     },
@@ -102,6 +102,7 @@ const VolunteerSchema = new mongoose.Schema(
     //////////////////////
   }
 );
+
 const sign = util.promisify(jwt.sign);
 const verify = util.promisify(jwt.verify);
 
