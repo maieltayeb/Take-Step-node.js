@@ -100,7 +100,7 @@ router.post(
   }
 );
 
-////------------------------------login-----------------------//
+////------------------------------login-----------------------///
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
   const user = await BusinessOwner.findOne({ email }).populate("country");

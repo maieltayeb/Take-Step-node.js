@@ -3,8 +3,11 @@ const Education = require("../models/Education");
 const Skill = require("../models/Skill");
 const express = require("express");
 const authenticationMiddleware = require("../middlewares/authentication");
+const ownerAuthorization=require("../middlewares/ownerAuthorization");
 const validationMiddleWare = require("../middlewares/validationMiddleware");
+
 require("express-async-errors");
+require("dotenv").config();
 const router = express.Router();
 const { check } = require("express-validator");
 
@@ -90,6 +93,7 @@ router.post(
 
 ////------------------------------login-----------------------//
 router.post("/login", async (req, res, next) => {
+  console.log("from login")
   const { email, password } = req.body;
   const user = await Volunteer.findOne({ email }).populate("country");
   if (!user) throw new Error("wrong email or password");
@@ -106,7 +110,6 @@ router.post("/login", async (req, res, next) => {
 router.post(
   "/add-education",
   authenticationMiddleware,
-
   async (req, res, next) => {
     const {
       volunteerId,
@@ -179,21 +182,21 @@ router.delete("/:id", async (req, res, next) => {
   await res.json({ deleted });
 });
 
-//////////////////////////////////////////////Add skill//////////////////////////
+//////////////////////////Add skill hereee//////////////////////////
 router.post(
-  "/add-skill",
+  "/addSkill",
   authenticationMiddleware,
-
-  async (req, res, next) => {
-    const { volunteerId, skillName } = req.body;
+  async (req, res) => {
+    const { volunteerId,skillName } = req.body;
     const newSkill = new Skill({
       volunteerId,
       skillName
     });
-    // let volunteer = await Volunteer.findByIdAndUpdate(volunteerId, {
-    //   $push: { skills: newSkill }
-    // });
-
+    let volunteer = await Volunteer.findByIdAndUpdate(volunteerId, {
+      $push: { skills: newSkill }
+      
+    });
+    console.log("pushed",volunteer)
     await newSkill.save();
     res.json({
       newSkill,
@@ -201,5 +204,71 @@ router.post(
     });
   }
 );
-
 module.exports = router;
+
+////---------------Edite Skill--------------////
+router.patch(
+  "/editSkill/:skillId",
+  authenticationMiddleware,
+  // ownerAuthorization, 
+  async (req, res, next) => {
+    const { skillId } = req.params;
+    const {
+      skillName
+    } = req.body;
+    const updatedSkill = await Skill.findByIdAndUpdate(
+      skillId,
+      {
+        skillName
+      },
+      {
+        new: true,
+        omitUndefined: true
+      }
+    );
+    res.status(200).json({
+      message: "skill Edited Succssefully",
+      updatedSkill
+  })
+  console.error(" can't edite skill")
+  next()
+  }
+);
+
+////------------------Delete Skill----------------////
+router.delete('/deleteSkill/:id',
+authenticationMiddleware,
+// ownerAuthorization, 
+async (req, res) => {
+const { id} = req.params;
+const skillToDelete = await Skill.findByIdAndDelete(id);
+res.status(200).json(skillToDelete)
+})
+/////------------------end Skill-----------------//////
+/////////////////////////////////////////////////////////////////////
+router.delete("deleteEducation/:volunteerId/:EduId",
+authenticationMiddleware,
+ async (req, res, next) => {
+  try {
+    const { volunteerId,EduId } = req.params;
+    const volunteer= await Volunteer.findById(volunteerId)
+    console.log("delete from vol",volunteer) 
+    const eduDeleted = await volunteer.findByIdAndDelete(EduId);
+    console.log("delete from edu",EduId) 
+    res.status(200).json(eduDeleted);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+///////////////////////////////////
+// router.delete('/:productId',(req,res,next)=>{
+//   Product.findById(req.params.productId , (err , product)=>{
+//       if(err) return next(createError(400,err));
+//       product.remove(product,(err)=>{
+//           if(err) return next(createError(400,err));
+//       });
+//       res.send(product);
+//   })
+// })
