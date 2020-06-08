@@ -239,3 +239,30 @@ router.post(
 );
 
 module.exports = router;
+/////////////////////////////////////////////////////////////////////
+router.delete("deleteEducation/:volunteerId/:EduId",
+authenticationMiddleware,
+ async (req, res, next) => {
+  try {
+    const { volunteerId,EduId } = req.params;
+    const volunteer= await Volunteer.findById(volunteerId)
+    console.log("delete from vol",volunteer) 
+    const eduDeleted = await volunteer.findByIdAndDelete(EduId);
+    console.log("delete from edu",EduId) 
+    res.status(200).json(eduDeleted);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+///////////////////////////////////
+// router.delete('/:productId',(req,res,next)=>{
+//   Product.findById(req.params.productId , (err , product)=>{
+//       if(err) return next(createError(400,err));
+//       product.remove(product,(err)=>{
+//           if(err) return next(createError(400,err));
+//       });
+//       res.send(product);
+//   })
+// })

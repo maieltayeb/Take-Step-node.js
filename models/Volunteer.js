@@ -134,5 +134,4 @@ VolunteerSchema.statics.getUserFromToken = async function(token) {
 };
 
 const Volunteer = mongoose.model("Volunteer", VolunteerSchema);
-
 module.exports = Volunteer;
