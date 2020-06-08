@@ -120,12 +120,12 @@ VolunteerSchema.methods.comparePassword = async function(plainPassword) {
   const userInstance = this;
   return bcrypt.compare(plainPassword, userInstance.password);
 };
-//---------------------generate token for this user------------------------------//
+// ---------------------generate token for this user------------------------------//
 VolunteerSchema.methods.generateToken = async function(expiresIn = "2w") {
   const userInstance = this;
   return sign({ Id: userInstance.id }, jwtSecret, { expiresIn });
 };
-///----------------get user from token----------------------//
+// /----------------get user from token----------------------//
 VolunteerSchema.statics.getUserFromToken = async function(token) {
   const User = this;
   const payload = await verify(token, jwtSecret);
@@ -134,6 +134,6 @@ VolunteerSchema.statics.getUserFromToken = async function(token) {
   return currentUser;
 };
 
-const Volunteer = mongoose.model("Volunteer", VolunteerSchema);
 
+const Volunteer = mongoose.model("Volunteer", VolunteerSchema);
 module.exports = Volunteer;
