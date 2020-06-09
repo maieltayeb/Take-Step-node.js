@@ -127,7 +127,8 @@ router.post(
       grade
     });
     let volunteerNewEducation = await Volunteer.findByIdAndUpdate(volunteerId, {
-      $push: { educations: newEducation }
+      $push: { educations: newEducation.id }
+      // $push: { educations: newEducation }
     });
 
     await newEducation.save();
@@ -177,6 +178,7 @@ router.delete("/:id", async (req, res, next) => {
   const deleted = await Education.findByIdAndRemove(id);
   const educationsAfterDel = await Education.find();
   await res.json({ deleted });
+  // res.json({message : "delete education"});
 });
 
 //////////////////////////////////////////////Add skill//////////////////////////
@@ -204,21 +206,23 @@ router.post(
 
 module.exports = router;
 /////////////////////////////////////////////////////////////////////
-router.delete("deleteEducation/:volunteerId/:EduId",
-authenticationMiddleware,
- async (req, res, next) => {
-  try {
-    const { volunteerId,EduId } = req.params;
-    const volunteer= await Volunteer.findById(volunteerId)
-    console.log("delete from vol",volunteer) 
-    const eduDeleted = await volunteer.findByIdAndDelete(EduId);
-    console.log("delete from edu",EduId) 
-    res.status(200).json(eduDeleted);
-  } catch (err) {
-    console.error(err);
-    next(err);
+router.delete(
+  "deleteskill/:volunteerId/:EduId",
+  authenticationMiddleware,
+  async (req, res, next) => {
+    try {
+      const { volunteerId, EduId } = req.params;
+      const volunteer = await Volunteer.findById(volunteerId);
+      console.log("delete from vol", volunteer);
+      const eduDeleted = await volunteer.findByIdAndDelete(EduId);
+      console.log("delete from edu", EduId);
+      res.status(200).json(eduDeleted);
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
   }
-});
+);
 
 ///////////////////////////////////
 // router.delete('/:productId',(req,res,next)=>{
