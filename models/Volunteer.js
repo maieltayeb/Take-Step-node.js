@@ -37,11 +37,17 @@ const VolunteerSchema = new mongoose.Schema(
       //      }
     },
     educations: [
-      {
-        type: mongoose.ObjectId,
-        ref: "Education"
-      }
+      // {
+        // type: mongoose.ObjectId,
+        // ref: "Education"
+      // }
     ],
+
+  //   educationId:{
+  //     type:mongoose.ObjectId,
+  //     ref:'Education'
+  
+  // },
     skills: [
       {
         type: mongoose.ObjectId,
@@ -102,6 +108,15 @@ const VolunteerSchema = new mongoose.Schema(
     //////////////////////
   }
 );
+////-------aya----------------------------------//
+// VolunteerSchema.virtual('myEducations',{
+//   ref:'Education',
+//   localField:'educations',
+//   foreignField:'_id'
+
+// })
+
+//---------------end aya--------------------------///
 
 const sign = util.promisify(jwt.sign);
 const verify = util.promisify(jwt.verify);

@@ -145,7 +145,6 @@ router.post(
 router.patch(
   "/EditEducation/:EduId",
   authenticationMiddleware,
-
   async (req, res, next) => {
     const { EduId } = req.params;
     const {
@@ -245,6 +244,18 @@ const skillToDelete = await Skill.findByIdAndDelete(id);
 res.status(200).json(skillToDelete)
 })
 /////------------------end Skill-----------------//////
+
+//////////////////////////////////delete education  ///////////////////////////
+router.delete('/deleteEdu/:id',
+authenticationMiddleware,
+// ownerAuthorization, 
+async (req, res) => {
+const { id} = req.params;
+const educationToDelete = await Education.findByIdAndDelete(id);
+console.log("deleted from db ")
+res.status(200).json(educationToDelete)
+})
+/////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 router.delete("deleteEducation/:volunteerId/:EduId",
 authenticationMiddleware,
@@ -272,3 +283,42 @@ authenticationMiddleware,
 //       res.send(product);
 //   })
 // })
+
+//----------------------get educations by volunteer id------------------------------------//
+router.get('/getEdu/:id', async (req, res, next) => {
+  try{
+    const {id}=req.params
+    const educations= await  Volunteer.findById(id);
+    const volunteerEduction=educations.educations;
+    console.log("edu", volunteerEduction)
+    res.status(200).json( volunteerEduction);
+    // var myEducations=[];
+    // for(var i=0; i<volunteerEduction.length;i++){
+    //  var x = volunteerEduction[i];
+    // //  console.log(x)
+    //  const newEdu=await Education.findById(x);
+    //  myEducation=myEducations.push(newEdu)
+    //  console.log("newEdu",newEdu)
+    //  }
+    //  console.log(myEducations)
+     }
+catch(err){
+    statusCode=400
+    next(err)
+} 
+});
+//--------------------------------get education dy education id------------------------------------------------//
+router.get('/getEduById/:id', async (req, res, next) => {
+  try{
+    const {id}=req.params
+    const educations= await Education.findById(id);
+    // const volunteerEduction=educations.educations;
+    console.log("edu", educations)
+    res.status(200).json( educations);
+     }
+catch(err){
+    statusCode=400
+    next(err)
+} 
+});
+///--------------------------------------------------------------------------------------------------------///////
