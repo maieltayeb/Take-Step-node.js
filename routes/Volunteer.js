@@ -190,7 +190,7 @@ router.patch(
       //   db.collection.save(doc);
       // });
       let volunteerEdu = await Volunteer.findByIdAndUpdate(
-        { _id: volunteerId, educations: { $elemMatch: { _id: EduId } } },
+        { _id: volunteerId, educations: { _id: EduId } },
         { $set: { "educations.$": Voleducation } }
       ); //change first Matched elem
       //await Volunteer.findOneAndUpdate(
