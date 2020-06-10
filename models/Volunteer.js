@@ -36,18 +36,24 @@ const VolunteerSchema = new mongoose.Schema(
 
       //      }
     },
-    educations: {
-      type: Array
-      // ref: "Education"
-    },
-    // educations: [
+    educations: [
+      // {
+        // type: mongoose.ObjectId,
+        // ref: "Education"
+      // }
+    ],
 
-    // ],
-
-    skills: {
-      type: Array,
-      ref: "Skill"
-    },
+  //   educationId:{
+  //     type:mongoose.ObjectId,
+  //     ref:'Education'
+  
+  // },
+    skills: [
+      {
+        type: mongoose.ObjectId,
+        ref: "Skill"
+      }
+    ],
     jobTitle: {
       type: String
     },
@@ -102,6 +108,16 @@ const VolunteerSchema = new mongoose.Schema(
     //////////////////////
   }
 );
+////-------aya----------------------------------//
+// VolunteerSchema.virtual('myEducations',{
+//   ref:'Education',
+//   localField:'educations',
+//   foreignField:'_id'
+
+// })
+
+//---------------end aya--------------------------///
+
 const sign = util.promisify(jwt.sign);
 const verify = util.promisify(jwt.verify);
 
@@ -119,12 +135,12 @@ VolunteerSchema.methods.comparePassword = async function(plainPassword) {
   const userInstance = this;
   return bcrypt.compare(plainPassword, userInstance.password);
 };
-//---------------------generate token for this user------------------------------//
+// ---------------------generate token for this user------------------------------//
 VolunteerSchema.methods.generateToken = async function(expiresIn = "2w") {
   const userInstance = this;
   return sign({ Id: userInstance.id }, jwtSecret, { expiresIn });
 };
-///----------------get user from token----------------------//
+// /----------------get user from token----------------------//
 VolunteerSchema.statics.getUserFromToken = async function(token) {
   const User = this;
   const payload = await verify(token, jwtSecret);
@@ -134,5 +150,4 @@ VolunteerSchema.statics.getUserFromToken = async function(token) {
 };
 
 const Volunteer = mongoose.model("Volunteer", VolunteerSchema);
-
 module.exports = Volunteer;

@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 // const _ = require('lodash');
 // const validator=require('validator');
+const _ =require('lodash');
 
 const EducationSchema = new mongoose.Schema({
   volunteerId: {
@@ -23,7 +24,9 @@ const EducationSchema = new mongoose.Schema({
     type: String
   },
   graduationYear: {
-    type: Date
+    type: Date,
+    min: '1990-01-1',
+    max: '2020-01-1'
   },
   location: {
     type: String
@@ -31,7 +34,18 @@ const EducationSchema = new mongoose.Schema({
   grade: {
     type: String
   }
-});
+},
+{
+  timestamps:true,
+  toJSON:{
+      virtuals:true,
+      transform:(doc)=>{
+          return _.pick(doc,['volunteerId','facultyName','degree','img','graduationYear','location','grade'])
+      }
+  }
+
+}
+);
 
 const Education = mongoose.model("Education", EducationSchema);
 
