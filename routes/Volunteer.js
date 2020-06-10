@@ -174,15 +174,84 @@ router.patch(
     res.json({ updatedEducation });
   }
 );
-//////////////////////////////////////////////DELETE EDUCATION//////////////////////////
-router.delete("/:id", async (req, res, next) => {
-  const id = req.params.id;
-  const deleted = await Education.findByIdAndRemove(id);
-  const educationsAfterDel = await Education.find();
-  await res.json({ deleted });
-  // res.json({message : "delete education"});
+//----------------------get educations by volunteer id------------------------------------//
+router.get("/getEdu/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const educations = await Volunteer.findById(id);
+    const volunteerEduction = educations.educations;
+    console.log("edu", volunteerEduction);
+    res.status(200).json(volunteerEduction);
+    // var myEducations=[];
+    // for(var i=0; i<volunteerEduction.length;i++){
+    //  var x = volunteerEduction[i];
+    // //  console.log(x)
+    //  const newEdu=await Education.findById(x);
+    //  myEducation=myEducations.push(newEdu)
+    //  console.log("newEdu",newEdu)
+    //  }
+    //  console.log(myEducations)
+  } catch (err) {
+    statusCode = 400;
+    next(err);
+  }
 });
+//--------------------------------get education dy education id------------------------------------------------//
+router.get("/getEduById/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const educations = await Education.findById(id);
+    // const volunteerEduction=educations.educations;
+    console.log("edu", educations);
+    res.status(200).json(educations);
+  } catch (err) {
+    statusCode = 400;
+    next(err);
+  }
+});
+///--------------------------------------------------------------------------------------------------------///////
+//////////////////////////////////////////////DELETE EDUCATION//////////////////////////
+// router.delete("/:id", async (req, res, next) => {
+//   const id = req.params.id;
+//   const deleted = await Education.findByIdAndRemove(id);
+//   const educationsAfterDel = await Education.find();
+//   await res.json({ deleted });
+//   // res.json({message : "delete education"});
+// });
 
+//////////////////////////////////delete education  ///////////////////////////
+router.delete(
+  "/deleteEdu/:id",
+  authenticationMiddleware,
+  // ownerAuthorization,
+  async (req, res) => {
+    const { id } = req.params;
+    const educationToDelete = await Education.findByIdAndDelete(id);
+    console.log("deleted from db ");
+    res.status(200).json(educationToDelete);
+  }
+);
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+router.delete(
+  "deleteskill/:volunteerId/:EduId",
+  authenticationMiddleware,
+  async (req, res, next) => {
+    try {
+      const { volunteerId, EduId } = req.params;
+      const volunteer = await Volunteer.findById(volunteerId);
+      console.log("delete from vol", volunteer);
+      const eduDeleted = await volunteer.findByIdAndDelete(EduId);
+      console.log("delete from edu", EduId);
+      res.status(200).json(eduDeleted);
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+);
+
+///////////////////////////////////
 //////////////////////////Add skill hereee//////////////////////////
 router.post("/addSkill", authenticationMiddleware, async (req, res) => {
   const { volunteerId, skillName } = req.body;
@@ -242,39 +311,6 @@ router.delete(
 );
 /////------------------end Skill-----------------//////
 
-//////////////////////////////////delete education  ///////////////////////////
-router.delete(
-  "/deleteEdu/:id",
-  authenticationMiddleware,
-  // ownerAuthorization,
-  async (req, res) => {
-    const { id } = req.params;
-    const educationToDelete = await Education.findByIdAndDelete(id);
-    console.log("deleted from db ");
-    res.status(200).json(educationToDelete);
-  }
-);
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-router.delete(
-  "deleteskill/:volunteerId/:EduId",
-  authenticationMiddleware,
-  async (req, res, next) => {
-    try {
-      const { volunteerId, EduId } = req.params;
-      const volunteer = await Volunteer.findById(volunteerId);
-      console.log("delete from vol", volunteer);
-      const eduDeleted = await volunteer.findByIdAndDelete(EduId);
-      console.log("delete from edu", EduId);
-      res.status(200).json(eduDeleted);
-    } catch (err) {
-      console.error(err);
-      next(err);
-    }
-  }
-);
-
-///////////////////////////////////
 // router.delete('/:productId',(req,res,next)=>{
 //   Product.findById(req.params.productId , (err , product)=>{
 //       if(err) return next(createError(400,err));
@@ -285,65 +321,41 @@ router.delete(
 //   })
 // })
 
-//----------------------get educations by volunteer id------------------------------------//
-router.get("/getEdu/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const educations = await Volunteer.findById(id);
-    const volunteerEduction = educations.educations;
-    console.log("edu", volunteerEduction);
-    res.status(200).json(volunteerEduction);
-    // var myEducations=[];
-    // for(var i=0; i<volunteerEduction.length;i++){
-    //  var x = volunteerEduction[i];
-    // //  console.log(x)
-    //  const newEdu=await Education.findById(x);
-    //  myEducation=myEducations.push(newEdu)
-    //  console.log("newEdu",newEdu)
-    //  }
-    //  console.log(myEducations)
-  } catch (err) {
-    statusCode = 400;
-    next(err);
-  }
-});
-//--------------------------------get education dy education id------------------------------------------------//
-router.get("/getEduById/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const educations = await Education.findById(id);
-    // const volunteerEduction=educations.educations;
-    console.log("edu", educations);
-    res.status(200).json(educations);
-  } catch (err) {
-    statusCode = 400;
-    next(err);
-  }
-});
-///--------------------------------------------------------------------------------------------------------///////
 //----------------------get skill by volunteer id------------------------------------//
-router.get("/get_skill/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const sills = await Volunteer.findById(id);
-    const volunteerSkills = sills.skills;
-    res.status(200).json(volunteerSkills);
-  } catch (err) {
-    statusCode = 400;
-    next(err);
+router.get(
+  "/getUserSkills/:id",
+  authenticationMiddleware,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const sills = await Volunteer.findById(id);
+      const volunteerSkills = sills.skills;
+      const dataArrSkills = [];
+
+      for (i = 0; i < volunteerSkills.length; i++) {
+        const skill = await Skill.findById(volunteerSkills[i]);
+        dataArrSkills.push(skill);
+      }
+      res.status(200).json(dataArrSkills);
+    } catch (err) {
+      statusCode = 400;
+      next(err);
+    }
   }
-});
+);
+
 //--------------------------------get skill by id------------------------------------------------//
 router.get("/getSkillById/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const skills = await Skill.findById(id);
     // const volunteerEduction=educations.educations;
-    console.log("edu", skills);
+    console.log("skil", skills);
     res.status(200).json(skills);
   } catch (err) {
     statusCode = 400;
     next(err);
   }
 });
+
 ///--------------------------------------------------------------------------------------------------------///////
