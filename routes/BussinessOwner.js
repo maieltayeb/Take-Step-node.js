@@ -16,7 +16,7 @@ router.get(
   }
 );
 //-----------------get user by id ---------------------------//
-router.get("/:id", authenticationMiddleware, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
   //const users=await User.find();
   const user = await BusinessOwner.findById(id).populate("country");
@@ -95,8 +95,25 @@ router.post(
       email
     });
 
-    await user.save();
-    res.json(user);
+
+    await  user.save(function(err) {
+      if (err) {
+        if (err.name=== 'MongoError' && err.code === 11000) {
+          // Duplicate username
+          return res.status(422).send({ succes: false, message: ' email already exist!' });
+        }
+  
+        // Some other error
+        return res.status(422).send(err);
+      }
+  
+      res.json({
+        success: true,user
+      });
+  
+    });
+
+ 
   }
 );
 

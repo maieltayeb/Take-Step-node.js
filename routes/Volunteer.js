@@ -85,9 +85,23 @@ router.post(
       country,
       email
     });
-
-    await user.save();
-    res.json(user);
+    await  user.save(function(err) {
+      if (err) {
+        if (err.name=== 'MongoError' && err.code === 11000) {
+         
+          return res.status(422).send({ succes: false, message: ' email already exist!' });
+        }
+  
+      
+        return res.status(422).send(err);
+      }
+  
+      res.json({
+        success: true,user
+      });
+  
+    });
+   
   }
 );
 
