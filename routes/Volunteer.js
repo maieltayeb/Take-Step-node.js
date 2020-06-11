@@ -32,7 +32,6 @@ router.get("/:id", authenticationMiddleware, async (req, res, next) => {
 router.patch(
   "/Edit/:id",
   authenticationMiddleware,
-
   async (req, res, next) => {
     id = req.user.id;
     const {
@@ -262,7 +261,7 @@ router.get("/getSkillById/:id", async (req, res, next) => {
 ///---------------------------------Add Education---------------------///
 router.post(
   "/add-education",
-  // authenticationMiddleware,
+  authenticationMiddleware,
   async (req, res, next) => {
     const {
       volunteerId,
@@ -297,10 +296,10 @@ router.post(
 
 /////-----------------------------edit Education--------------------------///
 router.patch(
-  "/EditEducation/:EduId",
+  "/EditEducation/:volunteerId/:EduId",
   authenticationMiddleware,
   async (req, res, next) => {
-    const { EduId } = req.params;
+    const { volunteerId,EduId } = req.params;
     const {
       universityId,
       facultyName,
@@ -309,22 +308,33 @@ router.patch(
       location,
       grade,
     } = req.body;
-    const updatedEducation = await Education.findByIdAndUpdate(
-      EduId,
-      {
-        universityId,
-        facultyName,
-        degree,
-        graduationYear,
-        location,
-        grade,
-      },
-      {
-        new: true,
-        omitUndefined: true,
-      }
-    );
+    const volunteer=await Volunteer.findById(volunteerId)
+    const eduIndex = volunteer.educations.findIndex((edu) => edu === EduId);
+    console.log("index",eduIndex)
+    if (eduIndex > -1) {        
+      const updatedEducation = await Education.findByIdAndUpdate(
+        EduId ,
+        {
+          universityId,
+          facultyName,
+          degree,
+          graduationYear,
+          location,
+          grade,
+        },
+        {
+          new: true,
+          omitUndefined: true,
+        }
+      
+      );
+      console.log("update",updatedEducation)
+    // await Volunteer.save();
+    await updatedEducation.save();
     res.json({ updatedEducation });
+
+    }
+    
   }
 );
 
@@ -409,7 +419,7 @@ router.delete(
       await Education.findByIdAndDelete(EduId);
       console.log(volunteer);
       res.json({ volunteer });
-    } catch (err) {
+     } catch (err) {
       console.error(err);
       next(err);
     }
