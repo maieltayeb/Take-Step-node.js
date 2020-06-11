@@ -234,20 +234,17 @@ router.delete(
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 router.delete(
-  "deleteskill/:volunteerId/:EduId",
+  "/delete_skill/:volunteerId/:SkillId",
   authenticationMiddleware,
   async (req, res, next) => {
-    try {
-      const { volunteerId, EduId } = req.params;
-      const volunteer = await Volunteer.findById(volunteerId);
-      console.log("delete from vol", volunteer);
-      const eduDeleted = await volunteer.findByIdAndDelete(EduId);
-      console.log("delete from edu", EduId);
-      res.status(200).json(eduDeleted);
-    } catch (err) {
-      console.error(err);
-      next(err);
-    }
+    const {   volunteerId, SkillId } = req.params;
+    const volunteer = await Volunteer.findById(volunteerId);
+    console.log("delete from vol", volunteer);
+    const skillDelete = await Skill.findByIdAndDelete(SkillId);
+
+    const skillFilter = volunteer.skills.filter((skil) => skil.id != SkillId);
+    // console.log("delete from edu", EduId);
+    res.status(200).json(skillFilter);
   }
 );
 
@@ -266,7 +263,6 @@ router.post("/addSkill", authenticationMiddleware, async (req, res) => {
   await newSkill.save();
   res.json({
     newSkill,
-    volunteer,
   });
 });
 module.exports = router;
@@ -299,16 +295,16 @@ router.patch(
 );
 
 ////------------------Delete Skill----------------////
-router.delete(
-  "/deleteSkill/:id",
-  authenticationMiddleware,
-  // ownerAuthorization,
-  async (req, res) => {
-    const { id } = req.params;
-    const skillToDelete = await Skill.findByIdAndDelete(id);
-    res.status(200).json(skillToDelete);
-  }
-);
+// router.delete(
+//   "/deleteSkill/:id",
+//   authenticationMiddleware,
+//   // ownerAuthorization,
+//   async (req, res) => {
+//     const { id } = req.params;
+//     const skillToDelete = await Skill.findByIdAndDelete(id);
+//     res.status(200).json(skillToDelete);
+//   }
+// );
 /////------------------end Skill-----------------//////
 
 // router.delete('/:productId',(req,res,next)=>{
