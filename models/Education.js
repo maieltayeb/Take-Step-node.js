@@ -40,7 +40,7 @@ const EducationSchema = new mongoose.Schema({
   toJSON:{
       virtuals:true,
       transform:(doc)=>{
-          return _.pick(doc,['volunteerId','facultyName','degree','img','graduationYear','location','grade'])
+          return _.pick(doc,["_id",'volunteerId','facultyName','degree','img','graduationYear','location','grade'])
       }
   }
 
