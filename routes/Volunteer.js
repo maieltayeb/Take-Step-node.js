@@ -5,7 +5,7 @@ const express = require("express");
 const authenticationMiddleware = require("../middlewares/authentication");
 const ownerAuthorization = require("../middlewares/ownerAuthorization");
 const validationMiddleWare = require("../middlewares/validationMiddleware");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 require("express-async-errors");
 require("dotenv").config();
@@ -113,13 +113,14 @@ router.delete(
   "/delete_skill/:volunteerId/:SkillId",
   authenticationMiddleware,
   async (req, res, next) => {
-    const {   volunteerId, SkillId } = req.params;
+    const { volunteerId, SkillId } = req.params;
     const volunteer = await Volunteer.findById(volunteerId);
     console.log("delete from vol", volunteer);
     const skillDelete = await Skill.findByIdAndDelete(SkillId);
 
-    const skillFilter = volunteer.skills.filter((skil) => skil.id != SkillId);
-    // console.log("delete from edu", EduId);
+    const skillFilter = volunteer.skills.filter((skil) => skil._id != SkillId);
+    await skillFilter.save();
+
     res.status(200).json(skillFilter);
   }
 );
@@ -234,7 +235,6 @@ router.get("/getSkillById/:id", async (req, res, next) => {
 
 //--------------------------------------------------[Start Education]-------------------------------------------------//
 
-
 ///---------------------------------Add Education---------------------///
 router.post(
   "/add-education",
@@ -304,33 +304,28 @@ router.patch(
   }
 );
 
-
 //------------------------------aya ------------------------////
 //----------------------get educations in volunteer and education by volunteer only ------------------------------------//
-router.get('/getEduWithVol/:id', async (req, res, next) => {
+router.get("/getEduWithVol/:id", async (req, res, next) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
     const educations = await Volunteer.findById(id);
-    console.log("educations", educations)
+    console.log("educations", educations);
     const volunteerEduction = educations.educations;
-    console.log("edu", volunteerEduction)
-    if (volunteerEduction)
-      var myEducations = [];
+    console.log("edu", volunteerEduction);
+    if (volunteerEduction) var myEducations = [];
     for (var i = 0; i < volunteerEduction.length; i++) {
       var x = volunteerEduction[i];
       //  console.log(x)
       const newEdu = await Education.findById(x);
-      myEducation = myEducations.push(newEdu)
-      console.log("newEdu", newEdu)
+      myEducation = myEducations.push(newEdu);
+      console.log("newEdu", newEdu);
     }
-    console.log(myEducations)
+    console.log(myEducations);
     res.status(200).json(myEducations);
-
-  }
-
-  catch (err) {
-    statusCode = 400
-    next(err)
+  } catch (err) {
+    statusCode = 400;
+    next(err);
   }
 });
 
@@ -359,18 +354,18 @@ router.get("/getEduById/:id", async (req, res, next) => {
 //   // res.json({message : "delete education"});
 // });
 
-
 ///----------------------/delete education  /-----------------------------////////////
-router.delete('/deleteEdu/:id',
+router.delete(
+  "/deleteEdu/:id",
   authenticationMiddleware,
-  // ownerAuthorization, 
+  // ownerAuthorization,
   async (req, res) => {
     const { id } = req.params;
     const educationToDelete = await Education.findByIdAndDelete(id);
-    console.log("deleted from db ")
-    res.status(200).json(educationToDelete)
-  })
-
+    console.log("deleted from db ");
+    res.status(200).json(educationToDelete);
+  }
+);
 
 ///////----------------------------------------------------------------------//////
 
@@ -382,41 +377,21 @@ router.delete(
     try {
       const { volunteerId, EduId } = req.params;
       const volunteer = await Volunteer.findById(volunteerId);
-      const eduIndex = volunteer.educations.findIndex(edu => edu === EduId);
-      if(eduIndex > -1) { 
+      const eduIndex = volunteer.educations.findIndex((edu) => edu === EduId);
+      if (eduIndex > -1) {
         volunteer.educations.splice(eduIndex, 1);
         await volunteer.save();
       }
-      await  Education.findByIdAndDelete(EduId);
+      await Education.findByIdAndDelete(EduId);
       console.log(volunteer);
       res.json({ volunteer });
     } catch (err) {
       console.error(err);
       next(err);
     }
-
   }
 );
 
 ///////------------------------------end delete ----------------------------------/////
 
-
-
-
-
-
-
-
-
-
 ///---------------------------------------------------------------------/////
-
-
-
-
-
-
-
-
-
-
