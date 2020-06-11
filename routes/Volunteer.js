@@ -115,13 +115,23 @@ router.delete(
   async (req, res, next) => {
     const { volunteerId, SkillId } = req.params;
     const volunteer = await Volunteer.findById(volunteerId);
-    console.log("delete from vol", volunteer);
-    const skillDelete = await Skill.findByIdAndDelete(SkillId);
+    const skillIndex = volunteer.skills.findIndex((skil) => skil == SkillId);
+    if (skillIndex > -1) {
+      volunteer.skills.splice(skillIndex, 1);
+      await volunteer.save();
+    }
+    await Skill.findByIdAndDelete(SkillId);
+    console.log(volunteer);
+    res.json({ volunteer });
+    // const { volunteerId, SkillId } = req.params;
+    // const volunteer = await Volunteer.findById(volunteerId);
+    // console.log("delete from vol", volunteer);
+    // const skillDelete = await Skill.findByIdAndDelete(SkillId);
 
-    const skillFilter = volunteer.skills.filter((skil) => skil._id != SkillId);
-    await skillFilter.save();
+    // const skillFilter = volunteer.skills.filter((skil) => skil._id != SkillId);
+    // await volunteer.save();
 
-    res.status(200).json(skillFilter);
+    // res.status(200).json(skillFilter);
   }
 );
 
