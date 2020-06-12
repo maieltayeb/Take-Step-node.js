@@ -24,7 +24,7 @@ const EducationSchema = new mongoose.Schema({
     type: String
   },
   graduationYear: {
-    type: Date,
+    type:String,
     min: '1990-01-1',
     max: '2020-01-1'
   },
