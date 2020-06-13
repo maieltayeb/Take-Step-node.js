@@ -283,13 +283,13 @@ router.post(
     });
     let volunteerNewEducation = await Volunteer.findByIdAndUpdate(volunteerId, {
       $push: { educations: newEducation.id },
+
       // $push: { educations: newEducation }
     });
-
     await newEducation.save();
     res.json({
       newEducation,
-      volunteerNewEducation,
+      // volunteerNewEducation,
     });
   }
 );
@@ -337,7 +337,6 @@ router.patch(
     
   }
 );
-
 //------------------------------aya ------------------------////
 //----------------------get educations in volunteer and education by volunteer only ------------------------------------//
 router.get("/getEduWithVol/:id", async (req, res, next) => {
