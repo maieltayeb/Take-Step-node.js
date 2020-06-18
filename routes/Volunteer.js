@@ -18,7 +18,7 @@ router.get("/getAllVolunteers", async (req, res, next) => {
   res.json(users);
 });
 //-----------------get Volunteer by id ---------------------------//
-router.get("/:id", authenticationMiddleware, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
   //const users=await User.find();
   const user = await Volunteer.findById(id)
@@ -26,8 +26,8 @@ router.get("/:id", authenticationMiddleware, async (req, res, next) => {
     .populate("educations")
     .populate("skills");
   res.json(user);
+  console.log("user is",user)
 });
-
 //---------------------------UpdateUser---------------------------//
 router.patch(
   "/Edit/:id",
