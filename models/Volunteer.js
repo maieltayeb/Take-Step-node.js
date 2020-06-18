@@ -38,16 +38,16 @@ const VolunteerSchema = new mongoose.Schema(
     },
     educations: [
       // {
-        // type: mongoose.ObjectId,
-        // ref: "Education"
+      // type: mongoose.ObjectId,
+      // ref: "Education"
       // }
     ],
 
-  //   educationId:{
-  //     type:mongoose.ObjectId,
-  //     ref:'Education'
-  
-  // },
+    //   educationId:{
+    //     type:mongoose.ObjectId,
+    //     ref:'Education'
+
+    // },
     skills: [
       {
         type: mongoose.ObjectId,
