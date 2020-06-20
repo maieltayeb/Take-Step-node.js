@@ -18,7 +18,7 @@ router.get("/getAllVolunteers", async (req, res, next) => {
   res.json(users);
 });
 //-----------------get Volunteer by id ---------------------------//
-router.get("/:id", authenticationMiddleware, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
   //const users=await User.find();
   const user = await Volunteer.findById(id)
@@ -26,8 +26,8 @@ router.get("/:id", authenticationMiddleware, async (req, res, next) => {
     .populate("educations")
     .populate("skills");
   res.json(user);
+  console.log("user is",user)
 });
-
 //---------------------------UpdateUser---------------------------//
 router.patch(
   "/Edit/:id",
@@ -283,13 +283,13 @@ router.post(
     });
     let volunteerNewEducation = await Volunteer.findByIdAndUpdate(volunteerId, {
       $push: { educations: newEducation.id },
+
       // $push: { educations: newEducation }
     });
-
     await newEducation.save();
     res.json({
       newEducation,
-      volunteerNewEducation,
+      // volunteerNewEducation,
     });
   }
 );
@@ -337,7 +337,6 @@ router.patch(
     
   }
 );
-
 //------------------------------aya ------------------------////
 //----------------------get educations in volunteer and education by volunteer only ------------------------------------//
 router.get("/getEduWithVol/:id", async (req, res, next) => {
