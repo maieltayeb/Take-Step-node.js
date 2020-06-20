@@ -293,7 +293,6 @@ router.post(
     });
   }
 );
-
 /////-----------------------------edit Education--------------------------///
 router.patch(
   "/EditEducation/:volunteerId/:EduId",
@@ -376,7 +375,6 @@ router.get("/getEduById/:id", async (req, res, next) => {
     next(err);
   }
 });
-
 //---------------------------------------------------------------------------------------------------------------//
 //////////////////////////////////////////////DELETE EDUCATION//////////////////////////
 // router.delete("/:id", async (req, res, next) => {
@@ -386,7 +384,6 @@ router.get("/getEduById/:id", async (req, res, next) => {
 //   await res.json({ deleted });
 //   // res.json({message : "delete education"});
 // });
-
 ///----------------------/delete education  /-----------------------------////////////
 router.delete(
   "/deleteEdu/:id",
