@@ -20,7 +20,7 @@ router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
   //const users=await User.find();
   const user = await BusinessOwner.findById(id).populate("country");
-  res.json(user);
+  res.json({ user });
 });
 
 //---------------------------UpdateUser---------------------------//
@@ -95,25 +95,24 @@ router.post(
       email
     });
 
-
-    await  user.save(function(err) {
+    await user.save(function(err) {
       if (err) {
-        if (err.name=== 'MongoError' && err.code === 11000) {
+        if (err.name === "MongoError" && err.code === 11000) {
           // Duplicate username
-          return res.status(422).send({ succes: false, message: ' email already exist!' });
+          return res
+            .status(422)
+            .send({ succes: false, message: " email already exist!" });
         }
-  
+
         // Some other error
         return res.status(422).send(err);
       }
-  
-      res.json({
-        success: true,user
-      });
-  
-    });
 
- 
+      res.json({
+        success: true,
+        user
+      });
+    });
   }
 );
 
@@ -126,7 +125,7 @@ router.post("/login", async (req, res, next) => {
   if (!isMatch) throw new Error("wrong email or password");
 
   const token = await user.generateToken();
- 
+
   if (!token) throw new Error("token  cant created");
 
   res.json({ token, user });
