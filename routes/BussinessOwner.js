@@ -1,11 +1,13 @@
 const BusinessOwner = require("../models/businessOwner");
-const SubmitTasks=require("../models/SubmitTasks")
+const SubmitTasks = require("../models/SubmitTasks");
 const express = require("express");
 const authenticationMiddleware = require("../middlewares/authentication");
 const validationMiddleWare = require("../middlewares/validationMiddleware");
 require("express-async-errors");
 const router = express.Router();
 const { check } = require("express-validator");
+// const altImg = require("../backup");
+
 //-----------multer - image upload--------------
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -56,8 +58,14 @@ router.patch(
   authenticationMiddleware,
   upload.single("imgUrl"),
   async (req, res, next) => {
+    debugger;
     console.log(req.file);
-    const imgUrl = req.file.path;
+    if (req.file) {
+      const imgUrl = req.file.path;
+    } else {
+      undefined;
+    }
+    // || altImg
     id = req.user.id;
     const {
       password,
@@ -172,7 +180,7 @@ router.post(
       jobId,
       jobTitle,
       taskLink,
-      VolunteerComment,
+      VolunteerComment
     } = req.body;
     const newLink = new SubmitTasks({
       bussinessOwnerId,
@@ -180,47 +188,42 @@ router.post(
       jobId,
       jobTitle,
       taskLink,
-      VolunteerComment,
+      VolunteerComment
     });
-    const arr=await BusinessOwner.findById(bussinessOwnerId)
-    const realJobTitles=[];
-    for(let i=0;i<arr.submitTasks.length;i++){
-      arr.submitTasks[i]=Object.keys(arr.submitTasks[i])
-      console.log("",arr.submitTasks[i][i])
-      realJobTitles.push(arr.submitTasks[i])
-    //  if(arr.submitTasks[i][i]===jobTitle){console.log("ahhhh")}
-    let newTaskLink;
-    if(arr.submitTasks[i][i]===newLink.jobTitle){
-      newTaskLink = await BusinessOwner.findOneAndUpdate(newLink.jobTitle,     
-        {
-           $push:{ submitTasks: [ { [newLink.jobTitle]: newLink } ]},  
-     
+    const arr = await BusinessOwner.findById(bussinessOwnerId);
+    const realJobTitles = [];
+    for (let i = 0; i < arr.submitTasks.length; i++) {
+      arr.submitTasks[i] = Object.keys(arr.submitTasks[i]);
+      console.log("", arr.submitTasks[i][i]);
+      realJobTitles.push(arr.submitTasks[i]);
+      //  if(arr.submitTasks[i][i]===jobTitle){console.log("ahhhh")}
+      let newTaskLink;
+      if (arr.submitTasks[i][i] === newLink.jobTitle) {
+        newTaskLink = await BusinessOwner.findOneAndUpdate(newLink.jobTitle, {
+          $push: { submitTasks: [{ [newLink.jobTitle]: newLink }] }
+        });
+      } else {
+        newTaskLink = await BusinessOwner.findByIdAndUpdate(bussinessOwnerId, {
+          $push: { submitTasks: { [newLink.jobTitle]: newLink } }
         });
 
+        // console.log(newTaskLink)
+        // }
+        // else{
+        //    newTaskLink = await BusinessOwner.findByIdAndUpdate(bussinessOwnerId, {
+        //     $push: { submitTasks: {[newLink.jobTitle]:newLink}},
 
+        //     // $push: { educations: newEducation }
+
+        //   });}
+
+        console.log(newTaskLink);
+        await newLink.save();
+        res.json({
+          newLink
+        });
       }
-      else{    
-          newTaskLink = await BusinessOwner.findByIdAndUpdate(bussinessOwnerId, {
-            $push: { submitTasks:{[newLink.jobTitle]:newLink}}
-          })
-      
-    // console.log(newTaskLink)
-    // }
-  // else{
-  //    newTaskLink = await BusinessOwner.findByIdAndUpdate(bussinessOwnerId, {
-  //     $push: { submitTasks: {[newLink.jobTitle]:newLink}},
-
-  //     // $push: { educations: newEducation }
-      
-  //   });}
-
-    console.log(newTaskLink)
-    await newLink.save();
-    res.json({
-      newLink,
-    });
-  }
-}
+    }
   }
 );
 
@@ -231,9 +234,8 @@ router.get("/getSubmitTasks/:id", async (req, res, next) => {
     const user = await BusinessOwner.findById(id);
     console.log("projects", user);
     const submitTasks = user.submitTasks;
-    console.log("submitTasks",submitTasks);
-    if (submitTasks) 
-     var mySubmitTasks = [];
+    console.log("submitTasks", submitTasks);
+    if (submitTasks) var mySubmitTasks = [];
     for (var i = 0; i < submitTasks.length; i++) {
       var x = submitTasks[i];
       //  console.log(x)

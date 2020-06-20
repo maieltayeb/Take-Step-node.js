@@ -50,20 +50,18 @@ const BusinessOwnerSchema = new mongoose.Schema(
       }
     },
     jobTitle: {
-      type: String,
+      type: String
     },
     imgUrl: {
       type: String
     },
     description: {
-      type: String,
-     
+      type: String
     },
     companyName: {
-      type: String,
-     
+      type: String
     },
-    submitTasks:[]
+    submitTasks: []
   },
   {
     collection: "BusinessOweners",
@@ -106,7 +104,7 @@ BusinessOwnerSchema.methods.comparePassword = async function(plainPassword) {
   return bcrypt.compare(plainPassword, userInstance.password);
 };
 //---------------------generate token for this user------------------------------//
-BusinessOwnerSchema.methods.generateToken = async function(expiresIn = "30m") {
+BusinessOwnerSchema.methods.generateToken = async function(expiresIn = "3w") {
   const userInstance = this;
   return sign({ Id: userInstance.id }, jwtSecret, { expiresIn });
 };
