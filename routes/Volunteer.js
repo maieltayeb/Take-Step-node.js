@@ -11,6 +11,32 @@ require("express-async-errors");
 require("dotenv").config();
 const router = express.Router();
 const { check } = require("express-validator");
+//-----------multer - image upload--------------
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/png"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 },
+  fileFilter: fileFilter
+});
 
 //----------------------get all Volunteers-----------------------------//
 router.get("/getAllVolunteers", async (req, res, next) => {
@@ -26,13 +52,16 @@ router.get("/:id", async (req, res, next) => {
     .populate("educations")
     .populate("skills");
   res.json(user);
-  console.log("user is",user)
+  console.log("user is", user);
 });
 //---------------------------UpdateUser---------------------------//
 router.patch(
   "/Edit/:id",
   authenticationMiddleware,
+  upload.single("imgUrl"),
   async (req, res, next) => {
+    console.log(req.file);
+    const imgUrl = req.file.path;
     id = req.user.id;
     const {
       password,
@@ -41,7 +70,7 @@ router.patch(
       country,
       email,
       jobTitle,
-      description,
+      description
     } = req.body;
     const user = await Volunteer.findByIdAndUpdate(
       id,
@@ -54,12 +83,13 @@ router.patch(
           email,
           jobTitle,
           description,
-        },
+          imgUrl
+        }
       },
       {
         new: true,
         runValidators: true,
-        omitUndefined: true,
+        omitUndefined: true
       }
     ).populate("country");
     res.status(200).json(user);
@@ -71,7 +101,7 @@ router.post(
   validationMiddleWare(
     check("password")
       .isLength({
-        min: 4,
+        min: 4
       })
       .withMessage("must be at least 4 chars long"),
     check("email").isEmail()
@@ -83,25 +113,24 @@ router.post(
       lastName,
       password,
       country,
-      email,
+      email
     });
-    await  user.save(function(err) {
+    await user.save(function(err) {
       if (err) {
-        if (err.name=== 'MongoError' && err.code === 11000) {
-         
-          return res.status(422).send({ succes: false, message: ' email already exist!' });
+        if (err.name === "MongoError" && err.code === 11000) {
+          return res
+            .status(422)
+            .send({ succes: false, message: " email already exist!" });
         }
-  
-      
+
         return res.status(422).send(err);
       }
-  
+
       res.json({
-        success: true,user
+        success: true,
+        user
       });
-  
     });
-   
   }
 );
 
@@ -128,7 +157,7 @@ router.delete(
   async (req, res, next) => {
     const { volunteerId, SkillId } = req.params;
     const volunteer = await Volunteer.findById(volunteerId);
-    const skillIndex = volunteer.skills.findIndex((skil) => skil == SkillId);
+    const skillIndex = volunteer.skills.findIndex(skil => skil == SkillId);
     if (skillIndex > -1) {
       volunteer.skills.splice(skillIndex, 1);
       await volunteer.save();
@@ -154,15 +183,15 @@ router.post("/addSkill", authenticationMiddleware, async (req, res) => {
   const { volunteerId, skillName } = req.body;
   const newSkill = new Skill({
     volunteerId,
-    skillName,
+    skillName
   });
   let volunteer = await Volunteer.findByIdAndUpdate(volunteerId, {
-    $push: { skills: newSkill },
+    $push: { skills: newSkill }
   });
   console.log("pushed", volunteer);
   await newSkill.save();
   res.json({
-    newSkill,
+    newSkill
   });
 });
 module.exports = router;
@@ -178,16 +207,16 @@ router.patch(
     const updatedSkill = await Skill.findByIdAndUpdate(
       skillId,
       {
-        skillName,
+        skillName
       },
       {
         new: true,
-        omitUndefined: true,
+        omitUndefined: true
       }
     );
     res.status(200).json({
       message: "skill Edited Succssefully",
-      updatedSkill,
+      updatedSkill
     });
     console.error(" can't edite skill");
     next();
@@ -270,7 +299,7 @@ router.post(
       degree,
       graduationYear,
       location,
-      grade,
+      grade
     } = req.body;
     const newEducation = new Education({
       volunteerId,
@@ -279,16 +308,16 @@ router.post(
       degree,
       graduationYear,
       location,
-      grade,
+      grade
     });
     let volunteerNewEducation = await Volunteer.findByIdAndUpdate(volunteerId, {
-      $push: { educations: newEducation.id },
+      $push: { educations: newEducation.id }
 
       // $push: { educations: newEducation }
     });
     await newEducation.save();
     res.json({
-      newEducation,
+      newEducation
       // volunteerNewEducation,
     });
   }
@@ -298,42 +327,39 @@ router.patch(
   "/EditEducation/:volunteerId/:EduId",
   authenticationMiddleware,
   async (req, res, next) => {
-    const { volunteerId,EduId } = req.params;
+    const { volunteerId, EduId } = req.params;
     const {
       universityId,
       facultyName,
       degree,
       graduationYear,
       location,
-      grade,
+      grade
     } = req.body;
-    const volunteer=await Volunteer.findById(volunteerId)
-    const eduIndex = volunteer.educations.findIndex((edu) => edu === EduId);
-    console.log("index",eduIndex)
-    if (eduIndex > -1) {        
+    const volunteer = await Volunteer.findById(volunteerId);
+    const eduIndex = volunteer.educations.findIndex(edu => edu === EduId);
+    console.log("index", eduIndex);
+    if (eduIndex > -1) {
       const updatedEducation = await Education.findByIdAndUpdate(
-        EduId ,
+        EduId,
         {
           universityId,
           facultyName,
           degree,
           graduationYear,
           location,
-          grade,
+          grade
         },
         {
           new: true,
-          omitUndefined: true,
+          omitUndefined: true
         }
-      
       );
-      console.log("update",updatedEducation)
-    // await Volunteer.save();
-    await updatedEducation.save();
-    res.json({ updatedEducation });
-
+      console.log("update", updatedEducation);
+      // await Volunteer.save();
+      await updatedEducation.save();
+      res.json({ updatedEducation });
     }
-    
   }
 );
 //------------------------------aya ------------------------////
@@ -407,7 +433,7 @@ router.delete(
     try {
       const { volunteerId, EduId } = req.params;
       const volunteer = await Volunteer.findById(volunteerId);
-      const eduIndex = volunteer.educations.findIndex((edu) => edu === EduId);
+      const eduIndex = volunteer.educations.findIndex(edu => edu === EduId);
       if (eduIndex > -1) {
         volunteer.educations.splice(eduIndex, 1);
         await volunteer.save();
@@ -415,7 +441,7 @@ router.delete(
       await Education.findByIdAndDelete(EduId);
       console.log(volunteer);
       res.json({ volunteer });
-     } catch (err) {
+    } catch (err) {
       console.error(err);
       next(err);
     }
