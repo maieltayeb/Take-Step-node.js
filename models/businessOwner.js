@@ -51,7 +51,6 @@ const BusinessOwnerSchema = new mongoose.Schema(
     },
     jobTitle: {
       type: String,
-    
     },
     imgUrl: {
       type: String
@@ -63,7 +62,8 @@ const BusinessOwnerSchema = new mongoose.Schema(
     companyName: {
       type: String,
      
-    }
+    },
+    submitTasks:[]
   },
   {
     collection: "BusinessOweners",
@@ -81,7 +81,8 @@ const BusinessOwnerSchema = new mongoose.Schema(
           "companyName",
           "jobTitle",
           "imgUrl",
-          "paymentData"
+          "paymentData",
+          "submitTasks"
         ]);
       }
     }
