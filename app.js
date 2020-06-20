@@ -11,7 +11,7 @@ require("dotenv").config();
 var cors = require("cors");
 require("./db");
 app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use("/uploads", express.static("uploads"));
 // parse application/json
 app.use(bodyParser.json());
 //  app.use(express.json());
