@@ -60,10 +60,12 @@ router.patch(
   async (req, res, next) => {
     debugger;
     console.log(req.file);
-    let imgUrl = undefined;
-    if (req.file) {
-      imgUrl = req.file.path;
-    }
+    // let imgUrl = undefined;
+    // if (!req.file) {
+    //   imgUrl = undefined;
+    // } else {
+    // }
+    let imgUrl = req.file.path;
     // || altImg
     id = req.user.id;
     const {

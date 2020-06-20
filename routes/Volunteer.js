@@ -61,10 +61,12 @@ router.patch(
   upload.single("imgUrl"),
   async (req, res, next) => {
     console.log(req.file);
-    let imgUrl = undefined;
-    if (req.file) {
-      imgUrl = req.file.path;
-    }
+    // let imgUrl = undefined;
+    // if (!req.file) {
+    //   imgUrl = undefined;
+    // } else {
+    // }
+    let imgUrl = req.file.path;
     id = req.user.id;
     const {
       password,
