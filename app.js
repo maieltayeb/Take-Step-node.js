@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 // app.use(express.urlencoded());
 
 app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
 app.use("/bussinessOwner", bussinessOwnerRouter);
 app.use("/volunteer", volunteerRouter);
