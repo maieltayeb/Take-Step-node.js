@@ -33,20 +33,20 @@ const BusinessOwnerSchema = new mongoose.Schema(
     },
     paymentData: {
       cardNum: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
       },
       secretNum: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
       },
       phone: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
       },
       total: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
       }
     },
     jobTitle: {
