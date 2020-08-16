@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 var bodyParser = require("body-parser");
-const port = 4402;
+const port = process.env.PORT || 4402;
 const bussinessOwnerRouter = require("./routes/BussinessOwner");
 const volunteerRouter = require("./routes/Volunteer");
 const countryRouter = require("./routes/country");
@@ -46,13 +46,13 @@ app.use((err, req, res, next) => {
     return res.status(statusCode).json({
       message: err.message,
       type: "INTERNAL_SERVER_ERROR",
-      details: []
+      details: [],
     });
   } else {
     res.status(statusCode).json({
       message: err.message,
       type: err.type,
-      details: err.details
+      details: err.details,
     });
   }
 });
@@ -60,3 +60,4 @@ app.use((err, req, res, next) => {
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
+// .listen(process.env.PORT || 5000)
